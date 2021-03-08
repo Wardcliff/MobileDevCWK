@@ -1,18 +1,14 @@
 import React, {Component} from 'react';
-import {View, TextInput, Text, TouchableOpacity} from 'react-native';
+import {View, TextInput, Text, Button, ToastAndroid} from 'react-native';
 
 import userController from '../controllers/userController';
-import Methods from '../library/methods';
-//import enumFormErrors from '../enums/formError';
 import {Styles} from '../styles/Style';
 
 const _userController = new userController();
-const _methods = new Methods();
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       user: {
         email: '',
@@ -35,76 +31,84 @@ export default class Login extends Component {
     this.setState({password: password});
   };
 
+  isLoggedIn = async (navigation) => {
+    ToastAndroid('logged in');
+    navigation.reset({
+      index: 0,
+    });
+  };
+
   btnLoginOnClick = async () => {
     this.state.user = {
       email: this.state.email,
       password: this.state.password,
     };
-
     let success = false;
-    if (this.state.user.email || this.state.user.password) {
+    if (this.state.user.email && this.state.user.password) {
       success = await this.doLogin();
     } else {
-      this.setState({error: true, errorType: 2 /*loginErrorEnum.EMPTY_FORM*/});
+      this.setState({error: true, errorType: 'Empty Form'});
     }
 
     if (success) {
       console.log('Login correct');
-      _methods.isLoggedIn(this.props.navigation);
+      this.isLoggedIn(this.props.navigation);
     }
   };
 
   doLogin = async () => {
-    let user = await _userController.LogInAsync(
-      JSON.stringify(this.state.user),
-    );
+    let user = await _userController.logIn(JSON.stringify(this.state.user));
 
     if (user) {
-      await _userController.saveUser(user);
+      await _userController.saveUser(user);//needs method
       return true;
     } else {
-      this.setState({error: true, errorType: 1});
+      this.setState({error: true, errorType: 'Bad request'});
     }
+  };
 
-    // const {navigation} = this.props;
-    // const {email, password} = this.state;
-    // try {
-    //   const resp = await fetch('http://localhost:3333/api/1.0.0/user/login', {
-    //     method: 'POST',
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       email,
-    //       password,
-    //     }),
-    //   });
-    //   const respData = await resp.json();
-    //   const {token} = respData;
-    //   const userID = respData.id;
-    //   <View>
-    //     <Text>Here!</Text>
-    //   </View>;
-    // } catch (error) {
-    //   console.log(`Error: ${error}`);
-    // }
+  errorHandler = () => {
+    switch (this.state.errorType) {
+      case 'Bad request': {
+        return 'Incorrect details';
+      }
+      case 'Empty Form': {
+        return 'Details Not Entered';
+      }
+      default:
+        'Error';
+    }
   };
 
   render() {
     const {navigation} = this.props;
-    const {email, password} = this.state;
+
     return (
-      <View>
-        <View>
-          <TextInput placeholder="Email" value={email} />
+      <View style={Styles.container}>
+        <View style={Styles.login}>
+          <TextInput
+            placeholder="Email"
+            onChangeText={this.emailChange}
+            value={this.state.email}
+          />
+          <TextInput
+            placeholder="Password"
+            onChangeText={this.passwordChange}
+            value={this.state.password}
+          />
+          <Text style={Styles.error}>
+            {this.state.error ? this.errorHandler() : ''}
+          </Text>
         </View>
         <View>
-          <TextInput placeholder="Password" value={password} />
+          <Button title="Log In" onPress={this.btnLoginOnClick}>
+            Log In
+          </Button>
+          <Button
+            title="Register"
+            onPress={() => navigation.navigate('Register')}
+          />
         </View>
-        <TouchableOpacity onPress={this.doLogin}>
-          <Text>Login</Text>
-        </TouchableOpacity>
       </View>
     );
   }
