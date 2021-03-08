@@ -2,9 +2,11 @@ import React, {Component} from 'react';
 import {View, TextInput, Text, Button, ToastAndroid} from 'react-native';
 
 import userController from '../controllers/userController';
+import Storage from '../components/Storage';
 import {Styles} from '../styles/Style';
 
 const _userController = new userController();
+const _storage = new Storage();
 
 export default class Login extends Component {
   constructor(props) {
@@ -32,9 +34,10 @@ export default class Login extends Component {
   };
 
   isLoggedIn = async (navigation) => {
-    ToastAndroid('logged in');
+    ToastAndroid.show('Logged in!', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
     navigation.reset({
       index: 0,
+      routes: [{name: 'Home'}],
     });
   };
 
@@ -60,23 +63,23 @@ export default class Login extends Component {
     let user = await _userController.logIn(JSON.stringify(this.state.user));
 
     if (user) {
-      await _userController.saveUser(user);//needs method
+      await _storage.saveUser(user);
       return true;
     } else {
-      this.setState({error: true, errorType: 'Bad request'});
+      this.setState({error: true, errorType: 'Bad Request'});
     }
   };
 
   errorHandler = () => {
     switch (this.state.errorType) {
-      case 'Bad request': {
+      case 'Bad Request': {
         return 'Incorrect details';
       }
       case 'Empty Form': {
         return 'Details Not Entered';
       }
       default:
-        'Error';
+        'Unexpected Error';
     }
   };
 

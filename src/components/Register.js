@@ -11,13 +11,13 @@ export default class Register extends Component {
     super(props);
     this.state = {
       user: {
-        foreName: '',
-        surName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         password: '',
       },
-      foreName: '',
-      surName: '',
+      forename: '',
+      surname: '',
       email: '',
       password: '',
       error: false,
@@ -25,12 +25,12 @@ export default class Register extends Component {
     };
   }
 
-  foreNameChange = (foreName) => {
-    this.setState({foreName: foreName});
+  forenameChange = (forename) => {
+    this.setState({forename: forename});
   };
 
-  surNameChange = (surName) => {
-    this.setState({surName: surName});
+  surnameChange = (surname) => {
+    this.setState({surname: surname});
   };
 
   emailChange = (email) => {
@@ -44,16 +44,16 @@ export default class Register extends Component {
   btnRegisterOnClick = async () => {
     let success = false;
     this.state.user = {
-      foreName: this.state.foreName,
-      surName: this.state.surName,
+      first_name: this.state.forename,
+      last_name: this.state.surname,
       email: this.state.email,
       password: this.state.password,
     };
 
     if (
-      this.state.foreName &&
-      this.state.surName &&
-      this.state.email &&
+      this.state.forename ||
+      this.state.surname ||
+      this.state.email ||
       this.state.password
     ) {
       success = await this.doRegister();
@@ -62,7 +62,9 @@ export default class Register extends Component {
     }
 
     if (success) {
-      this.props.navigation.navigate('Login'); // temp should log in automagically
+      ToastAndroid.show('Registered!', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+      this.props.navigation.navigate('Login');
+      // temp should log in automagically
     }
   };
 
@@ -70,10 +72,46 @@ export default class Register extends Component {
     return await _userController.register(JSON.stringify(this.state.user));
   };
 
+  errorHandler = () => {
+    switch (this.state.errorType) {
+      case 'Bad Request': {
+        return 'Bad Request';
+      } //Not needed for this page?
+      case 'Empty Form': {
+        return 'Info Not Entered';
+      }
+      default:
+        'Unexpected Error';
+    }
+  };
+
   render() {
     return (
-      <View>
-        <Text>Register Screen</Text>
+      <View style={Styles.container}>
+        <TextInput
+          placeholder="Forename"
+          onChangeText={this.forenameChange}
+          value={this.state.forename}
+        />
+        <TextInput
+          placeholder="Surname"
+          onChangeText={this.surnameChange}
+          value={this.state.surname}
+        />
+        <TextInput
+          placeholder="Email Address"
+          onChangeText={this.emailChange}
+          value={this.state.email}
+        />
+        <TextInput
+          placeholder="Password"
+          onChangeText={this.passwordChange}
+          value={this.state.password}
+        />
+        <Text>{this.state.error ? this.errorHandler() : ''}</Text>
+        <Button title="Register" onPress={this.btnRegisterOnClick}>
+          Register
+        </Button>
       </View>
     );
   }

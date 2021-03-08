@@ -35,7 +35,7 @@ export default class userController {
       console.log(resp.status);
       if (resp.ok) {
         const user = await resp.json();
-        console.log('User: ' + JSON.stringify(user));
+        console.log('UserLogIn: ' + JSON.stringify(user));
         return user;
       } else {
         return null;
@@ -45,5 +45,25 @@ export default class userController {
     }
   }
 
-  async register(user) {}
+  async register(user) {
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: user,
+      });
+
+      if (resp.ok) {
+        const json = await resp.json();
+        console.log('UserRegister: ' + JSON.stringify(json));
+        return true;
+      } else {
+        throw new Error(resp.status);
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }
