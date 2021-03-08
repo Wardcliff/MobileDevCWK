@@ -63,13 +63,21 @@ export default class Register extends Component {
 
     if (success) {
       ToastAndroid.show('Registered!', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-      this.props.navigation.navigate('Login');
+      //this.props.navigation.navigate('Login');
       // temp should log in automagically
+      this.doLogin();
     }
   };
 
   doRegister = async () => {
     return await _userController.register(JSON.stringify(this.state.user));
+  };
+
+  doLogin = async () => {
+    await _userController.logIn(
+      JSON.stringify(this.state.user.email, this.state.password),
+    );
+    this.props.navigation.navigate('Home');
   };
 
   errorHandler = () => {
