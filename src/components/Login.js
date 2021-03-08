@@ -70,6 +70,8 @@ export default class Login extends Component {
     }
   };
 
+  //TODO: i think this is overcomplicating things,
+  //      maybe reduce it to basic $error?
   errorHandler = () => {
     switch (this.state.errorType) {
       case 'Bad Request': {

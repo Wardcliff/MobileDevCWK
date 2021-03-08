@@ -1,7 +1,6 @@
 import {StyleSheet} from 'react-native';
 
 const background = '#6f4e37'; //coffee
-const textColour = 'white';
 
 export const Styles = StyleSheet.create({
   bg: {

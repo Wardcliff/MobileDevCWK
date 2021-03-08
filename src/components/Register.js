@@ -62,9 +62,7 @@ export default class Register extends Component {
     }
 
     if (success) {
-      ToastAndroid.show('Registered!', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-      //this.props.navigation.navigate('Login');
-      // temp should log in automagically
+      ToastAndroid.show('Registered', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
       this.doLogin();
     }
   };
@@ -73,6 +71,8 @@ export default class Register extends Component {
     return await _userController.register(JSON.stringify(this.state.user));
   };
 
+  // I think theres maybe some unexplained behaviour here,
+  // but it still logs in, so low priority
   doLogin = async () => {
     await _userController.logIn(
       JSON.stringify(this.state.user.email, this.state.password),
@@ -82,9 +82,6 @@ export default class Register extends Component {
 
   errorHandler = () => {
     switch (this.state.errorType) {
-      case 'Bad Request': {
-        return 'Bad Request';
-      } //Not needed for this page?
       case 'Empty Form': {
         return 'Info Not Entered';
       }
