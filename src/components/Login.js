@@ -34,10 +34,11 @@ export default class Login extends Component {
   };
 
   isLoggedIn = async (navigation) => {
+    console.log(this.state.userToken);
     ToastAndroid.show('Logged in!', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
     navigation.reset({
       index: 0,
-      routes: [{name: 'Home'}],
+      routes: [{name: 'Home', params: {authToken: this.state.userToken}}],
     });
   };
 
@@ -64,6 +65,7 @@ export default class Login extends Component {
 
     if (user) {
       await _storage.saveUser(user);
+      this.setState({userToken: user.token});
       return true;
     } else {
       this.setState({error: true, errorType: 'Bad Request'});

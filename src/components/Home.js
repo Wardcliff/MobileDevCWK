@@ -21,7 +21,7 @@ export default class Home extends Component {
     };
   }
 
-  onMount = async () => {
+  componentDidMount = async () => {
     await this.getData();
     await this.getUser();
     await this.getFavourites();
@@ -32,7 +32,7 @@ export default class Home extends Component {
     });
   };
 
-  onUnmount() {
+  componentWillUnmount() {
     this.unsubscribe();
   }
 
@@ -41,7 +41,8 @@ export default class Home extends Component {
   //TODO: data should also be stored in Storage component
   //      , again may not be implemented
   getData = async () => {
-    const {route} = this.props;
+    const route = this.props.route;
+    console.log(route);
     try {
       const resp = await fetch('http://10.0.2.2:3333/api/1.0.0/find', {
         method: 'GET',
@@ -51,7 +52,8 @@ export default class Home extends Component {
         },
       });
 
-      const respData = await resp.json();
+      let respData = await resp.json();
+      console.log(JSON.stringify(respData));
       this.setState({items: respData});
       this.setState({authToken: route.params.authToken});
       this.setState({id: route.params.id});
@@ -77,7 +79,7 @@ export default class Home extends Component {
   }
 
   postFavourite = async (id) => {
-    const {route} = this.props;
+    const route = this.props.route;
     const url = `http://10.0.2.2:3333/api/1.0.0/location/${id}/favourite`;
     try {
       await fetch(url, {
@@ -104,7 +106,7 @@ export default class Home extends Component {
   };
 
   deleteFavourite = async (id) => {
-    const {route} = this.props;
+    const route = this.props.route;
     const url = `http://10.0.2.2:3333/api/1.0.0/location/${id}/favourite`;
     try {
       await fetch(url, {
@@ -148,6 +150,7 @@ export default class Home extends Component {
 
     const renderItem = ({item}) => (
       <TouchableOpacity
+        style={Styles.item}
         onPress={() =>
           this.props.navigation.navigate('Item', {
             itemId: item.location_id,
@@ -161,7 +164,7 @@ export default class Home extends Component {
             ? () => this.postFavourite(item.location_id)
             : () => this.deleteFavourite(item.location_id)
         }>
-        <View style={Styles.container}>
+        <View style={Styles.itemContainer}>
           <View>
             <Text>{item.location_name}</Text>
             <Text>Locations; {item.location_town}</Text>
@@ -183,14 +186,6 @@ export default class Home extends Component {
           renderItem={renderItem}
           keyExtractor={(item) => item.location_id.toString()}
         />
-        <View>
-          <Button
-            title="User"
-            onPress={() =>
-              this.props.navigation.navigate('User', {id, authToken})
-            }
-          />
-        </View>
       </SafeAreaView>
     );
   }
