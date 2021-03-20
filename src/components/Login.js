@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {View, TextInput, Text, Button, ToastAndroid} from 'react-native';
+import React, { Component } from 'react';
+import { View, TextInput, Text, Button, ToastAndroid } from 'react-native';
 
 import userController from '../controllers/userController';
 import Storage from '../components/Storage';
-import {Styles} from '../styles/Style';
+import { Styles } from '../styles/Style';
 
 const _userController = new userController();
 const _storage = new Storage();
@@ -18,6 +18,8 @@ export default class Login extends Component {
         id: null,
         userToken: null,
       },
+      userToken: null,
+      id: null,
       email: '',
       password: '',
       error: false,
@@ -26,19 +28,24 @@ export default class Login extends Component {
   }
 
   emailChange = (email) => {
-    this.setState({email: email});
+    this.setState({ email: email });
   };
 
   passwordChange = (password) => {
-    this.setState({password: password});
+    this.setState({ password: password });
   };
 
   isLoggedIn = async (navigation) => {
-    console.log(this.state.userToken);
+    console.log("id, usertoken " + this.state.id, this.state.userToken);
     ToastAndroid.show('Logged in!', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
     navigation.reset({
       index: 0,
-      routes: [{name: 'Home', params: {authToken: this.state.userToken}}],
+      routes: [
+        {
+          name: 'Home',
+          params: {id: this.state.id, authToken: this.state.userToken},
+        },
+      ],
     });
   };
 
@@ -51,7 +58,7 @@ export default class Login extends Component {
     if (this.state.user.email && this.state.user.password) {
       success = await this.doLogin();
     } else {
-      this.setState({error: true, errorType: 'Empty Form'});
+      this.setState({ error: true, errorType: 'Empty Form' });
     }
 
     if (success) {
@@ -65,10 +72,10 @@ export default class Login extends Component {
 
     if (user) {
       await _storage.saveUser(user);
-      this.setState({userToken: user.token});
+      this.setState({ id: user.id, userToken: user.token });
       return true;
     } else {
-      this.setState({error: true, errorType: 'Bad Request'});
+      this.setState({ error: true, errorType: 'Bad Request' });
     }
   };
 
@@ -88,7 +95,7 @@ export default class Login extends Component {
   };
 
   render() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
 
     return (
       <View style={Styles.container}>

@@ -54,19 +54,17 @@ export default class Home extends Component {
 
       let respData = await resp.json();
       console.log(JSON.stringify(respData));
-      this.setState({items: respData});
-      this.setState({authToken: route.params.authToken});
-      this.setState({id: route.params.id});
+      this.setState({ items: respData });
+      this.setState({ authToken: route.params.authToken });
+      this.setState({ id: route.params.id });
     } catch (error) {
-      console.log(`error: ${error}`);
+      console.log(`getdata error: ${error}`);
       ToastAndroid.show(error, ToastAndroid.LONG, ToastAndroid.BOTTOM);
     }
   };
 
   getUser = async () => {
-    let user = await _userController.getUser(
-      JSON.stringify(this.state.user, this.state.authToken),
-    );
+    return await _userController.getUser(this.state.id, this.state.authToken);
   };
 
   getFavourites() {
@@ -75,7 +73,7 @@ export default class Home extends Component {
     locations.forEach((location) => {
       favourites.push(location.location_id);
     });
-    this.setState({favourites});
+    this.setState({ favourites });
   }
 
   postFavourite = async (id) => {
@@ -96,7 +94,7 @@ export default class Home extends Component {
         ToastAndroid.BOTTOM,
       );
     } catch (error) {
-      console.log(`error: ${error}`);
+      console.log(`postfavourite error: ${error}`);
       ToastAndroid.show(
         `error: ${error}`,
         ToastAndroid.LONG,
@@ -123,7 +121,7 @@ export default class Home extends Component {
         ToastAndroid.BOTTOM,
       );
     } catch (error) {
-      console.log(`error: ${error}`);
+      console.log(`deletefavourite error: ${error}`);
       ToastAndroid.show(
         `error: ${error}`,
         ToastAndroid.LONG,
@@ -138,17 +136,17 @@ export default class Home extends Component {
     reviews.forEach((review) => {
       likedReviewed.push(review.review.review_id);
     });
-    this.setState({likedReviewed});
+    this.setState({ likedReviewed });
   }
 
   render() {
-    const {authToken, favourites, likedReviewed, id, items} = this.state;
+    const { authToken, favourites, likedReviewed, id, items } = this.state;
 
     const favouriteIcon = (
       <Image source={require('../assets/heart_icon.png')} />
     );
 
-    const renderItem = ({item}) => (
+    const renderItem = ({ item }) => (
       <TouchableOpacity
         style={Styles.item}
         onPress={() =>
